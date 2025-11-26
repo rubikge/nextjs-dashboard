@@ -9,8 +9,13 @@ import {
 } from "./definitions";
 import { formatCurrency } from "./utils";
 
-console.log("POSTGRES_URL:", process.env.POSTGRES_URL);
-const sql = postgres(process.env.POSTGRES_URL!);
+console.log("POSTGRES_HOST:", process.env.POSTGRES_HOST);
+const sql = postgres({
+  host: process.env.POSTGRES_HOST,
+  user: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DATABASE,
+});
 
 export async function fetchRevenue() {
   try {
