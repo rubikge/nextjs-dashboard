@@ -1,0 +1,46 @@
+steps:
+  # 1. Pull the latest image to use as cache (allow failure if first run)
+  - name: "gcr.io/cloud-builders/docker"
+    entrypoint: "bash"
+    args:
+      [
+        "-c",
+        "docker pull $_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest || exit 0",
+      ]
+
+  # 2. Build the Docker image with caching
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "build",
+        "-t",
+        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
+        "-t",
+        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest",
+        "--cache-from",
+        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest",
+        ".",
+      ]
+
+  # 3. Push the Docker images to Artifact Registry
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
+      ]
+
+  - name: "gcr.io/cloud-builders/docker"
+    args:
+      [
+        "push",
+        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest",
+      ]
+
+images:
+  - "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA"
+  - "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest"
+
+substitutions:
+  _LOCATION: "europe-central2"
+  _REPOSITORY: "cloud-run-source-deploy"
