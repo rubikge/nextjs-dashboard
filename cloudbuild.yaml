@@ -1,39 +1,29 @@
 steps:
-  # 1. Pull the latest image to use as cache (allow failure if first run)
-  - name: "gcr.io/cloud-builders/docker"
-    entrypoint: "bash"
-    args:
-      [
-        "-c",
-        "docker pull $_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest || exit 0",
-      ]
-
-  # 2. Build the Docker image with caching
-  - name: "gcr.io/cloud-builders/docker"
+  # Build using Google Cloud Buildpacks (no Dockerfile required)
+  - name: "gcr.io/k8s-skaffold/pack"
+    entrypoint: "pack"
     args:
       [
         "build",
-        "-t",
         "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
-        "-t",
-        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest",
-        "--cache-from",
-        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest",
-        ".",
+        "--builder",
+        "gcr.io/buildpacks/builder:latest",
+        "--network",
+        "cloudbuild",
+        "--publish",
+        "--cache-image",
+        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:cache",
       ]
 
-  # 3. Push the Docker images to Artifact Registry
-  - name: "gcr.io/cloud-builders/docker"
+  # Tag the image as 'latest'
+  - name: "gcr.io/cloud-builders/gcloud"
     args:
       [
-        "push",
+        "artifacts",
+        "docker",
+        "tags",
+        "add",
         "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
-      ]
-
-  - name: "gcr.io/cloud-builders/docker"
-    args:
-      [
-        "push",
         "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest",
       ]
 
