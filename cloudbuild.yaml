@@ -27,9 +27,19 @@ steps:
         "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest",
       ]
 
-images:
-  - "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA"
-  - "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest"
+  # Deploy to Cloud Run
+  - name: "gcr.io/google.com/cloudsdktool/cloud-sdk"
+    entrypoint: gcloud
+    args:
+      [
+        "run",
+        "deploy",
+        "nextjs-dashboard-run",
+        "--image",
+        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
+        "--region",
+        "$_LOCATION",
+      ]
 
 substitutions:
   _LOCATION: "europe-central2"
