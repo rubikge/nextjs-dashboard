@@ -44,3 +44,6 @@ images:
 substitutions:
   _LOCATION: "europe-central2"
   _REPOSITORY: "cloud-run-source-deploy"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
