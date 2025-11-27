@@ -5,14 +5,14 @@ steps:
     args:
       [
         "build",
-        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
+        "$LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
         "--builder",
         "gcr.io/buildpacks/builder:latest",
         "--network",
         "cloudbuild",
         "--publish",
         "--cache-image",
-        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:cache",
+        "$LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:cache",
       ]
 
   # Tag the image as 'latest'
@@ -23,8 +23,8 @@ steps:
         "docker",
         "tags",
         "add",
-        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
-        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest",
+        "$LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
+        "$LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:latest",
       ]
 
   # Deploy to Cloud Run
@@ -36,13 +36,12 @@ steps:
         "deploy",
         "nextjs-dashboard-run",
         "--image",
-        "$_LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
+        "$LOCATION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/nextjs-dashboard:$COMMIT_SHA",
         "--region",
-        "$_LOCATION",
+        "$LOCATION",
       ]
 
 substitutions:
-  _LOCATION: "europe-central2"
   _REPOSITORY: "cloud-run-source-deploy"
 
 options:
